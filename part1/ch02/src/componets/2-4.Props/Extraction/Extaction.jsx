@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 function formatDate(date) {
   return date.toLocaleDateString();
@@ -38,6 +38,11 @@ const comment = {
 };
 
 const Extaction = () => {
+  useEffect(() => {
+    console.log("Exta");
+  }, []);
+
+  // api
   return (
     <Comment date={comment.date} text={comment.text} author={comment.author} />
   );
