@@ -4,6 +4,7 @@ import FontButton from "./components/RecoilExample/tutorial/FontButton";
 import Text from "./components/RecoilExample/tutorial/Text";
 import CharacterCounter from "./components/RecoilExample/tutorial/CharacterCounter";
 import TodoList from "./components/RecoilExample/todo/TodoList";
+import CurrentUserInfo from "./components/RecoilExample/CurrentUserInfo";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         {/*<Text />*/}
         {/*<CharacterCounter />*/}
         <TodoList />
+        <CurrentUserInfo />
       </RecoilRoot>
     </div>
   );
