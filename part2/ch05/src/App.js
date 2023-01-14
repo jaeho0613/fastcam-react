@@ -5,17 +5,25 @@ import Text from "./components/RecoilExample/tutorial/Text";
 import CharacterCounter from "./components/RecoilExample/tutorial/CharacterCounter";
 import TodoList from "./components/RecoilExample/todo/TodoList";
 import CurrentUserInfo from "./components/RecoilExample/CurrentUserInfo";
+import RecoilTest from "./components/RecoilExample/tutorial/RecoilTest";
+import ModalProvider from "./components/RecoilExample/contextApi/ModalProvider";
+import Modal from "./components/RecoilExample/contextApi/Modal";
 
 function App() {
   return (
     <div className="App">
-      <RecoilRoot>
         {/*<FontButton />*/}
         {/*<Text />*/}
         {/*<CharacterCounter />*/}
-        <TodoList />
-        <CurrentUserInfo />
-      </RecoilRoot>
+      {/*<TodoList />*/}
+      {/*<RecoilRoot>*/}
+      {/*  <CurrentUserInfo />*/}
+      {/*  <RecoilTest />*/}
+      {/*</RecoilRoot>*/}
+
+      <ModalProvider>
+        <Modal />
+      </ModalProvider>
     </div>
   );
 }
