@@ -1,10 +1,14 @@
-import React, {useState} from "react";
-import Modal from "../../componenets/Modal";
-import styled from "@emotion/styled/macro";
-import {useRecoilValue} from "recoil";
-import {selectedTodoState} from "../TodoList/atom";
+import React, { useRef, useState } from 'react';
+import styled from '@emotion/styled/macro';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil'
+import {v4 as uuidv4} from 'uuid'
 
-export const ModalBody = styled.div`
+import { todoFormModalOpenState } from './atom';
+import { selectedDateState, todoListState } from '../TodoList/atom';
+import Modal from "../../componenets/Modal";
+import {getSimpleDateFormat} from "../../utils/utils";
+
+const Container = styled.div`
   width: 100vw;
   max-width: 386px;
   padding: 8px;
@@ -12,7 +16,7 @@ export const ModalBody = styled.div`
 
 const Date = styled.small`
   display: block;
-  color: #c9c8cc;
+  color: #C9C8CC;
 `;
 
 const InputTodo = styled.input`
@@ -21,39 +25,71 @@ const InputTodo = styled.input`
   width: 100%;
   box-sizing: border-box;
   background-color: transparent;
-  color: #c9c8cc;
-  caret-color: #c9c8cc;
+  color: #C9C8CC;
+  caret-color: #C9C8CC;
 `;
 
 const Card = styled.div`
   width: 100%;
   max-width: 370px;
   border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgb(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   padding: 24px;
   box-sizing: border-box;
   background-color: #19181A;
-
   ${Date} + ${InputTodo} {
     margin-top: 24px;
   }
+;
 `;
 
 const TodoFormModal: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [todo, setTodo] = useState<string>('');
+
+  const selectedDate = useRecoilValue(selectedDateState);
+  const todoList = useRecoilValue(todoListState);
+
+  const [isOpen, setIsOpen] = useRecoilState(todoFormModalOpenState);
+
+  const reset = () => {
+    setTodo('');
+    inputRef.current?.focus();
+  }
 
   const handleClose = () => setIsOpen(false);
 
+  const addTodo = useRecoilCallback(({ snapshot, set }) => () => {
+    const todoList = snapshot.getLoadable(todoListState).getValue();
+
+    const newTodo = { id: uuidv4(), content: todo, done: false, date: selectedDate };
+
+    set(todoListState, [...todoList, newTodo]);
+  }, [todo, selectedDate, todoList]);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      addTodo();
+      reset();
+      handleClose();
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTodo(e.target.value);
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalBody>
+      <Container>
         <Card>
-          <Date>2021-09-12</Date>
-          <InputTodo placeholder='새로운 이벤트'></InputTodo>
+          <Date>{getSimpleDateFormat(selectedDate)}</Date>
+          <InputTodo ref={inputRef} placeholder="새로운 이벤트" onKeyPress={handleKeyPress} value={todo} onChange={handleChange} />
         </Card>
-      </ModalBody>
+      </Container>
     </Modal>
   )
 }
 
-export default TodoFormModal
+export default TodoFormModal;

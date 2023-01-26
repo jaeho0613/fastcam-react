@@ -1,5 +1,5 @@
-import {atom, atomFamily, selectorFamily} from 'recoil';
-import {filteredTodoListState} from '../TodoList/atom';
+import { atom, atomFamily, selectorFamily } from 'recoil';
+import { filteredTodoListState } from '../TodoList/atom';
 
 export const todoStatisticsModalOpenState = atom<boolean>({
   key: 'todoStatisticsModalOpenState',
@@ -10,7 +10,7 @@ export const todoStatisticsState = atomFamily<{ total: number, done: number }, D
   key: 'todoStatisticsState',
   default: selectorFamily({
     key: 'todoStatisticsState/default',
-    get: (selectedDate) => ({get}) => {
+    get: (selectedDate) => ({ get }) => {
       const todoList = get(filteredTodoListState(selectedDate));
 
       return {

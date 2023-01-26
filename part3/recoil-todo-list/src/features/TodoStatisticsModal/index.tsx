@@ -1,8 +1,12 @@
-import styled from "@emotion/styled/macro";
-import React, {useState} from "react";
-import {ModalBody} from "../TodoFormModal";
+import React from 'react';
+import styled from '@emotion/styled/macro';
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { HiOutlineTrash } from 'react-icons/hi';
+
+import { todoStatisticsModalOpenState, todoStatisticsState } from './atom';
+import { filteredTodoListState, selectedDateState, todoListState } from '../TodoList/atom';
+import {getSimpleDateFormat} from "../../utils/utils";
 import Modal from "../../componenets/Modal";
-import {HiOutlineTrash} from "react-icons/hi";
 
 const Container = styled.div`
   width: 100vw;
@@ -18,7 +22,7 @@ const Date = styled.small`
 const TodoActionButton = styled.button<{ secondary?: boolean; }>`
   border: none;
   background-color: transparent;
-  color: ${({secondary}) => secondary && '#ff6b6b'};
+  color: ${({ secondary }) => secondary && '#ff6b6b'};
   cursor: pointer;
 `;
 
@@ -43,7 +47,6 @@ const TodoList = styled.ul`
   margin: 0;
   padding: 0;
   width: 100%;
-
   ${TodoItem} + ${TodoItem} {
     margin-top: 8px;
   }
@@ -63,37 +66,51 @@ const Card = styled.div`
   padding: 24px;
   box-sizing: border-box;
   background-color: #19181A;
-
   ${Date} + ${TodoList} {
     margin-top: 24px;
   }
+;
 `;
 
 const TodoStatisticsModal: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClose = () => {
-    setIsOpen(false);
+  const [todoList, setTodoList] = useRecoilState(todoListState);
+  const [isOpen, setIsOpen] = useRecoilState(todoStatisticsModalOpenState);
+
+  const selectedDate = useRecoilValue(selectedDateState);
+
+  const filteredTodoList = useRecoilValue(filteredTodoListState(selectedDate));
+  const statistics = useRecoilValue(todoStatisticsState(selectedDate));
+
+  const handleClose = () => setIsOpen(false);
+
+  const removeTodo = (id: string): void => {
+    setTodoList(todoList.filter(todo => todo.id !== id));
   }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <ModalBody>
+      <Container>
         <Card>
-          <Date>2021-09-12</Date>
-          <Statistics>할 일 0개 남음</Statistics>
+          <Date>{getSimpleDateFormat(selectedDate)}</Date>
+          <Statistics>할 일 {statistics.total - statistics.done}개 남음</Statistics>
           <TodoList>
-            <TodoItem>
-              <Content></Content>
-              <TodoActions>
-                <TodoActionButton>
-                  <HiOutlineTrash/>
-                </TodoActionButton>
-              </TodoActions>
-            </TodoItem>
+            {
+              filteredTodoList?.map(todo => (
+                <TodoItem key={todo.id}>
+                  <Content>{todo.content}</Content>
+                  <TodoActions>
+                    <TodoActionButton secondary onClick={() => removeTodo(todo.id)}>
+                      <HiOutlineTrash />
+                    </TodoActionButton>
+                  </TodoActions>
+                </TodoItem>
+              ))
+            }
           </TodoList>
         </Card>
-      </ModalBody>
+      </Container>
     </Modal>
   )
-
 }
+
+export default TodoStatisticsModal;

@@ -1,5 +1,5 @@
-import {atom, atomFamily, selectorFamily} from 'recoil';
-import {isSameDay} from '../../utils/utils';
+import { atom, atomFamily, selectorFamily } from 'recoil';
+import {isSameDay} from "../../utils/utils";
 
 export interface Todo {
   id: string;
@@ -8,29 +8,29 @@ export interface Todo {
   date: Date;
 }
 
-export const todoListState = atom<Array<Todo>>({ // 할 일 목록
+export const todoListState = atom<Array<Todo>>({
   key: 'todoListState',
   default: [],
 });
 
-export const selectedDateState = atom<Date>({ // 선택한 날짜
+export const selectedDateState = atom<Date>({
   key: 'selectedDateState',
   default: new Date(),
 });
 
-export const selectedTodoState = atom<Todo | null>({ // 선택한 할 일
+export const selectedTodoState = atom<Todo | null>({
   key: 'selectedTodoState',
   default: null,
 });
 
-export const filteredTodoListState = atomFamily<Array<Todo>, Date>({ // 선택한 날짜의 할 일 목록
+export const filteredTodoListState = atomFamily<Array<Todo>, Date>({
   key: 'filteredTodoListState',
   default: selectorFamily({
     key: 'filteredTodoListState/default',
-    get: (selectedDate) => ({get}) => {
+    get: (selectedDate) => ({ get }) => {
       const todoList = get(todoListState);
 
       return todoList.filter(todo => isSameDay(todo.date, selectedDate));
     }
   })
-});
+})
