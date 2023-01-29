@@ -61,6 +61,7 @@ const Empty = styled.div<{ color: string }>`
 
 export function Evolution({ color, url, isLoading, id }: Props) {
   const [evolutionChain, setEvolutionChain] = useState<Array<{ from: { name: string; url: string }, to: { name: string; url: string }, level: number }>>([]);
+
   return (
     <Base>
       <Title color={mapColorToHex(color?.name)}>Evolution</Title>
