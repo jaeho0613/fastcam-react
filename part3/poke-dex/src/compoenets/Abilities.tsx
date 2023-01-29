@@ -2,11 +2,7 @@ import styled from '@emotion/styled/macro';
 
 import { Ability, Color, EffectEntry } from '../types';
 import { mapColorToHex } from '../utils';
-
-interface Props {
-  color?: Color;
-  abilities?: Array<Ability>;
-}
+import useAbilities from '../hooks/useAbilities';
 
 const Title = styled.h4<{ color: string }>`
   margin: 0;
@@ -50,15 +46,28 @@ const Description = styled.span`
   word-wrap: break-word;
 `;
 
-function Abilities({ color }: Props) {
+interface Props {
+  color?: Color;
+  abilities: Array<Ability>;
+}
+
+function Abilities({ color, abilities }: Props) {
+  const results = useAbilities(abilities);
+
+
+
   return (
     <Base>
       <Title color={mapColorToHex(color?.name)}>Abilities</Title>
       <List>
-        <ListItem>
-          <Label>Label</Label>
-          <Description>Description</Description>
-        </ListItem>
+        {
+          results.map(({ data}, idx) => (
+            data && <ListItem key={idx}>
+              <Label>{data.data.name}</Label>
+              <Description>{data.data.effect_entries[0].effect}</Description>
+            </ListItem>
+          ))
+        }
       </List>
     </Base>
   );

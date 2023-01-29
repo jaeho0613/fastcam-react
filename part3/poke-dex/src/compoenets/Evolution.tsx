@@ -1,7 +1,9 @@
 import styled from '@emotion/styled/macro';
-import { Color } from '../types';
-import { useState } from 'react';
+import { Chain, Color } from '../types';
+import { useEffect, useState } from 'react';
 import { mapColorToHex } from '../utils';
+import useEvolutionChain from '../hooks/useEvolutionChain';
+import { EvolutionStage } from './EvolutionStage';
 
 type Props = {
   isLoading: boolean;
@@ -59,14 +61,56 @@ const Empty = styled.div<{ color: string }>`
   color: ${({ color }) => color};
 `;
 
-export function Evolution({ color, url, isLoading, id }: Props) {
+export function Evolution({ color, url }: Props) {
+  const { isLoading, isError, isSuccess, data } = useEvolutionChain(url);
   const [evolutionChain, setEvolutionChain] = useState<Array<{ from: { name: string; url: string }, to: { name: string; url: string }, level: number }>>([]);
+
+  useEffect(() => {
+    const makeEvolutionChain = (chain: Chain) => {
+      if (chain.evolves_to.length) {
+        const [evolvesTo] = chain.evolves_to;
+
+        const from = chain.species;
+        const to = evolvesTo.species;
+        const level = evolvesTo.evolution_details[0].min_level;
+
+        setEvolutionChain(prev => [...prev, { from, to, level }]);
+
+        makeEvolutionChain(chain.evolves_to[0]);
+      }
+    }
+
+    isSuccess && data && makeEvolutionChain(data.data.chain);
+
+    return (): void => {
+      setEvolutionChain([]);
+    }
+  }, [isSuccess, data]);
 
   return (
     <Base>
       <Title color={mapColorToHex(color?.name)}>Evolution</Title>
-      <List>
-      </List>
+      {
+        isLoading || isError ? (
+          <ImageWrapper>
+            <Image src="/assets/loading.gif" />
+          </ImageWrapper>
+        ) : (
+          evolutionChain.length ? (
+            <List>
+              {
+                evolutionChain.map(({ from, to, level }, idx) => (
+                  <EvolutionStage key={idx} from={from} to={to} level={level} color={color} />
+                ))
+              }
+            </List>
+          ) : (
+            <EmptyWrapper>
+              <Empty color={mapColorToHex(color?.name)}>This Pokémon does not evolve.</Empty>
+            </EmptyWrapper>
+          )
+        )
+      }
     </Base>
-  );
+  )
 }

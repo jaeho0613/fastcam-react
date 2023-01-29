@@ -1,6 +1,7 @@
 import styled from '@emotion/styled/macro';
 import { Color } from '../types';
 import { mapColorToHex } from '../utils';
+import usePokemon, { usePokemonQueries } from '../hooks/usePokemon';
 
 const Base = styled.li`
   width: 100%;
@@ -52,18 +53,22 @@ interface Props {
   };
 }
 
-export function EvolutionStage({ color, level }: Props) {
+export function EvolutionStage({ color, level, to, from }: Props) {
+
+  const [prev, next] = usePokemonQueries([from.name, to.name]);
+
   return (
     <Base>
       <ImageWrapper>
         <Text color={mapColorToHex(color?.name)} />
-        <Image />
+        <Image src={prev.data?.data.sprites.other['official-artwork'].front_default} />
       </ImageWrapper>
       <DividerWrapper>
+        {level && <Text color={mapColorToHex(color?.name)}>{`Level : ${level}`}</Text>}
         <Divider />
       </DividerWrapper>
       <ImageWrapper>
-        <Image />
+        <Image src={next.data?.data.sprites.other['official-artwork'].front_default} />
       </ImageWrapper>
     </Base>
   );
