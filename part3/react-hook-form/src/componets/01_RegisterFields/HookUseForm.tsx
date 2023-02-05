@@ -19,6 +19,7 @@ function HookUseForm() {
 
   return (
     <>
+      <h4>01-01 : 기본 useForm 사용법</h4>
       <form onSubmit={handleSubmit(onSubmit)}>
         <input type={'text'} placeholder={"User name"} {...register('name')}/>
         <input type={'password'} placeholder={'password'} {...register('password')}/>
