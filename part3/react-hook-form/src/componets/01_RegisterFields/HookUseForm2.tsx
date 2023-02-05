@@ -15,7 +15,7 @@ function HookUseForm2() {
 
   return (
     <>
-      <h4>01-02: 심화 useForm 사용법</h4>
+      <h4>01-02: 심화 watch 사용법</h4>
       <form>
         <input type={'text'} placeholder={'Nick Name'} {...register('nickname')} />
         <p>{watchNickName}</p>
